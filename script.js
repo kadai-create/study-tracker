@@ -109,6 +109,8 @@ function updateGachaUI() {
         gachaBtn.disabled = true;
         const remain = getNextGachaProgress() - getCurrentProgressCount();
         gachaTimer.textContent = `あと${remain}マスでガチャが引けます`;
+        // ガチャが引けない場合は画像を消す
+        gachaResult.innerHTML = "";
     }
 }
 
