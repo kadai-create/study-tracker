@@ -66,7 +66,7 @@ function triggerAutoGacha() {
     // 今の進捗数を記録
     localStorage.setItem(GACHA_KEY, getCurrentProgressCount().toString());
 }
-}
+
 
 function resetGrid() {
     if (confirm("進捗をリセットしますか？")) {
