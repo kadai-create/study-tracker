@@ -80,19 +80,25 @@ function getRandomRarity() {
     return rarities[rarities.length - 1]; // 念のため
 }
 
-const GACHA_INTERVAL = 10 * 60 * 60 * 1000; // 10時間（ミリ秒）
-const GACHA_KEY = "lastGachaTime";
 
-function canDrawGacha() {
-    const last = localStorage.getItem(GACHA_KEY);
-    if (!last) return true;
-    return Date.now() - Number(last) >= GACHA_INTERVAL;
+const GACHA_KEY = "lastGachaProgress";
+const GACHA_INTERVAL = 10; // 10マスごと
+
+function getCurrentProgressCount() {
+    return progress.length;
 }
 
-function getNextGachaTime() {
-    const last = localStorage.getItem(GACHA_KEY);
-    if (!last) return 0;
-    return Number(last) + GACHA_INTERVAL;
+function getLastGachaProgress() {
+    return Number(localStorage.getItem(GACHA_KEY)) || 0;
+}
+
+function canDrawGacha() {
+    // 前回ガチャから10マス進んでいればOK
+    return getCurrentProgressCount() - getLastGachaProgress() >= GACHA_INTERVAL;
+}
+
+function getNextGachaProgress() {
+    return getLastGachaProgress() + GACHA_INTERVAL;
 }
 
 function updateGachaUI() {
@@ -101,11 +107,8 @@ function updateGachaUI() {
         gachaTimer.textContent = "";
     } else {
         gachaBtn.disabled = true;
-        const remain = getNextGachaTime() - Date.now();
-        const h = Math.floor(remain / (1000 * 60 * 60));
-        const m = Math.floor((remain % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((remain % (1000 * 60)) / 1000);
-        gachaTimer.textContent = `次のガチャまで: ${h}時間${m}分${s}秒`;
+        const remain = getNextGachaProgress() - getCurrentProgressCount();
+        gachaTimer.textContent = `あと${remain}マスでガチャが引けます`;
     }
 }
 
@@ -125,13 +128,22 @@ gachaBtn.addEventListener("click", () => {
             </div>
         </div>
     `;
-    localStorage.setItem(GACHA_KEY, Date.now().toString());
+    // 今の進捗数を記録
+    localStorage.setItem(GACHA_KEY, getCurrentProgressCount().toString());
     updateGachaUI();
 });
 
 // タイマーでUI更新
+// 進捗追加時にもガチャUI更新
 setInterval(updateGachaUI, 1000);
 updateGachaUI();
+
+// addStudyTimeの最後にもガチャUI更新
+const origAddStudyTime = addStudyTime;
+window.addStudyTime = function() {
+    origAddStudyTime();
+    updateGachaUI();
+};
 
 
 
