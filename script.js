@@ -27,14 +27,45 @@ function addStudyTime() {
         return;
     }
 
+    let gachaTriggered = false;
     for (let i = 0; i < hours; i++) {
         if (progress.length < totalCells) {
             progress.push(category);
+            // 10マス進むごとにガチャを自動で引く
+            if ((progress.length % GACHA_INTERVAL === 0) && (progress.length > getLastGachaProgress())) {
+                triggerAutoGacha();
+                gachaTriggered = true;
+            }
         }
     }
 
     localStorage.setItem("studyProgress", JSON.stringify(progress));
     createGrid();
+    if (gachaTriggered) {
+        updateGachaUI();
+    }
+}
+
+// 10マス進むごとに自動でガチャを引く関数
+function triggerAutoGacha() {
+    // ランダム画像選択
+    const idx = Math.floor(Math.random() * gachaImages.length);
+    const imgUrl = gachaImages[idx];
+    // レアリティ決定
+    const rarity = getRandomRarity();
+    // 画像とラベルを重ねて表示
+    gachaResult.innerHTML = `
+        <div style="position:relative;display:inline-block;">
+            <img src="${imgUrl}" alt="ガチャ画像" style="max-width:300px;max-height:200px;border-radius:8px;box-shadow:0 2px 8px #aaa;">
+            <div style="position:absolute;left:0;top:0;padding:8px 18px 8px 8px;font-size:2em;font-weight:bold;color:white;background:${rarity.color};border-radius:8px 0 16px 0;opacity:0.92;text-shadow:1px 1px 4px #000;">
+                ${rarity.label}
+            </div>
+        </div>
+        <div style="margin-top:8px;color:#e6005c;font-weight:bold;">ガチャ自動発動！</div>
+    `;
+    // 今の進捗数を記録
+    localStorage.setItem(GACHA_KEY, getCurrentProgressCount().toString());
+}
 }
 
 function resetGrid() {
