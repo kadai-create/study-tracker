@@ -4,6 +4,11 @@ const totalCells = 100;
 let progress = JSON.parse(localStorage.getItem("studyProgress")) || [];
 
 function createGrid() {
+    // データ壊れ対策: progressが配列でなければリセット
+    if (!Array.isArray(progress)) {
+        progress = [];
+        localStorage.removeItem("studyProgress");
+    }
     grid.innerHTML = "";
 
     for (let i = 0; i < totalCells; i++) {
