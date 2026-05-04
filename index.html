@@ -1,1 +1,35 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学習進捗トラッカー</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>学習進捗トラッカー</h1>
+
+    <div class="controls">
+        <input type="number" id="hours" placeholder="学習時間（時間）">
+        <select id="category">
+            <option value="blue">通常学習</option>
+            <option value="green">試験勉強</option>
+            <option value="red">研究</option>
+            <option value="yellow">その他</option>
+        </select>
+        <button onclick="addStudyTime()">追加</button>
+        <button onclick="resetGrid()">リセット</button>
+    </div>
+
+    <div id="grid"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+---
+
+
+
